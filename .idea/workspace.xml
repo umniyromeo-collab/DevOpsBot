@@ -71,7 +71,6 @@
     "RunOnceActivity.west.config.association.type.startup.service": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "UniquePtr",
     "last_opened_file_path": "C:/Users/User/DevOpsBot",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -102,7 +101,7 @@
       <workItem from="1770385710761" duration="3463000" />
       <workItem from="1770753177055" duration="814000" />
       <workItem from="1771058169595" duration="1482000" />
-      <workItem from="1771878674835" duration="1261000" />
+      <workItem from="1771878674835" duration="1995000" />
     </task>
     <task id="LOCAL-00001" summary="new_version">
       <option name="closed" value="true" />
