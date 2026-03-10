@@ -1,0 +1,12 @@
+# ========== CMake Build Files ==========
+build/
+out/
+bin/
+.idea/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.exe
+*.o
+*.obj
