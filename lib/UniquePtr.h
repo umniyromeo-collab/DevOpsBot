@@ -51,6 +51,7 @@ public:
     }
 
 private:
+    T *m_ptr;
 };
 
 

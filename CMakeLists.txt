@@ -29,8 +29,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(uniqueptr_test
-        tests/UniquePtr_test.cpp
-        cmake/UniquePtr.cpp
+        lib/UniquePtr_test.cpp
 )
 
 target_include_directories(uniqueptr_test PRIVATE ${CMAKE_SOURCE_DIR}/cmake)

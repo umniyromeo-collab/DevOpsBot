@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <../cmake/UniquePtr.h>
+#include <../lib/UniquePtr.h>
 
 TEST(UniquePtrTest, Constructor){
     int* ptr = new int(10);
