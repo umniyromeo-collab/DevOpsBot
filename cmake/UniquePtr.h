@@ -25,8 +25,12 @@ public:
 
     UniquePtr &operator=(const UniquePtr &other) = delete;
 
+    UniquePtr(UniquePtr &&other){
+        m_ptr = other.m_ptr;
+        other.m_ptr = nullptr;
+    }
+
     T *release() noexcept {
-        return m_ptr;
     }
 
     void reset(T *const ptr = nullptr) noexcept {
@@ -47,7 +51,6 @@ public:
     }
 
 private:
-    T *const m_ptr;
 };
 
 
