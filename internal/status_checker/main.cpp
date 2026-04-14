@@ -1,17 +1,16 @@
 #include <iostream>
 #include <string>
-#include <curl/curl.h>
+// #include <curl/curl.h>
 
 
-#include "chekers/builder/builder.h"
-#include "chekers/http/config.h"
-#include "chekers/https/config.h"
+#include "checkers/builder/builder.h"
+#include "checkers/http/config.h"
+#include "checkers/https/config.h"
 
 
 int main() {
-    std::string s = "https://google.com";
-    HTTPSConfig::Config config{s, 200};
-    Builder::Config config{ConfigType::https, config};
+    HTTPSChecker::Config httpsConfig{ "https://google.com", 200};
+    Builder::Config config{Builder::ConfigType::https, httpsConfig};
 
     std::unique_ptr<IChecker> googleChecker = Builder::CreateChecker(config);
 

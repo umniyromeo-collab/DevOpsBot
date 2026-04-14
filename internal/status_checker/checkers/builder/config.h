@@ -11,7 +11,7 @@ namespace Builder {
     enum class ConfigType {http, https};
 
     struct Config {
-        ConfigType;
+        ConfigType type;
         std::variant<HTTPChecker::Config, HTTPSChecker::Config> config;
     };
 }
