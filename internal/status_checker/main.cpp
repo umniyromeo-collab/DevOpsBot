@@ -3,6 +3,7 @@
 #include <thread>
 #include <random>
 #include <chrono>
+#include <mutex>
 // #include <curl/curl.h>
 
 
@@ -14,7 +15,12 @@
 void process(const std::unique_ptr<IChecker> &checker) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 
+    std::mutex mtx;
+    mtx.lock();
+
     std::cout << std::this_thread::get_id() << "\t" << checker->URL() << std::endl;
+
+    mtx.unlock();
 }
 
 int main() {
