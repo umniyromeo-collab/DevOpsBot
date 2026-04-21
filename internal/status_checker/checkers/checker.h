@@ -3,5 +3,6 @@
 class IChecker{
 public:
     virtual ~IChecker() = default;
-    virtual bool Check() const = 0;
+    [[nodiscard]] virtual bool Check() const = 0;
+    [[nodiscard]] virtual std::string URL() const = 0;
 };

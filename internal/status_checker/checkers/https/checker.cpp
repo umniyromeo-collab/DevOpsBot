@@ -6,4 +6,8 @@ namespace HTTPSChecker {
     bool Checker::Check() const {
         return this->url_.starts_with("https://");
     }
+
+    std::string Checker::URL() const {
+        return this->url_;
+    }
 }

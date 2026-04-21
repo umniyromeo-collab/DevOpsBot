@@ -4,7 +4,6 @@
 #include "../http/checker.h"
 #include "../https/checker.h"
 
-#include <unordered_map>
 
 namespace Builder {
 
