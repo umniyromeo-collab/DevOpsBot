@@ -12,10 +12,10 @@
 #include "checkers/https/config.h"
 
 
+std::mutex mtx;
 void process(const std::unique_ptr<IChecker> &checker) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 
-    std::mutex mtx;
     mtx.lock();
 
     std::cout << std::this_thread::get_id() << "\t" << checker->URL() << std::endl;
@@ -43,9 +43,7 @@ int main() {
     };
 
     for (int i = 0; i < 5; ++i) {
-
         Threads.emplace_back(process, Builder::CreateChecker(ThreadConfigs[i]));
-
     }
 
     for (auto &thread : Threads) {
