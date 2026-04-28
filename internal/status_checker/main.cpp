@@ -12,22 +12,20 @@
 #include "checkers/https/config.h"
 
 
-std::mutex mtx;
-void process(const std::unique_ptr<IChecker> &checker) {
+void process(const std::unique_ptr<IChecker> &checker, std::mutex &mtx) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 
-    mtx.lock();
+    std::lock_guard lock(mtx);
 
     std::cout << std::this_thread::get_id() << "\t" << checker->URL() << std::endl;
 
-    mtx.unlock();
 }
 
 int main() {
     HTTPSChecker::Config httpsConfig{ "https://google.com", 200};
-    Builder::Config config{Builder::ConfigType::https, httpsConfig};
+    const Builder::Config config{Builder::ConfigType::https, httpsConfig};
 
-    std::unique_ptr<IChecker> googleChecker = Builder::CreateChecker(config);
+    const std::unique_ptr<IChecker> googleChecker = Builder::CreateChecker(config);
 
     std::cout << googleChecker->Check() << std::endl;
 
@@ -42,8 +40,10 @@ int main() {
         {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}}
     };
 
+    std::mutex mtx;
+
     for (int i = 0; i < 5; ++i) {
-        Threads.emplace_back(process, Builder::CreateChecker(ThreadConfigs[i]));
+        Threads.emplace_back(process, Builder::CreateChecker(ThreadConfigs[i]), std::ref(mtx));
     }
 
     for (auto &thread : Threads) {
