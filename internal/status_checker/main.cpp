@@ -15,14 +15,13 @@
 void process(const IChecker &checker, std::mutex &mtx) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 
-    std::lock_guard lock(mtx);
+    std::lock_guard<std::mutex> lock(mtx);
 
     std::cout << checker.URL() << std::endl;
-
 }
 
 int main() {
-    HTTPSChecker::Config httpsConfig{ "https://google.com", 200};
+    HTTPSChecker::Config httpsConfig{"https://google.com", 200};
     const Builder::Config config{Builder::ConfigType::https, httpsConfig};
 
     const std::unique_ptr<IChecker> googleChecker = Builder::CreateChecker(config);
@@ -43,7 +42,13 @@ int main() {
     std::mutex mtx;
 
     for (const auto &thread_config : ThreadConfigs) {
-        Threads.emplace_back(process, Builder::CreateChecker(thread_config), std::ref(mtx));
+        auto checker = Builder::CreateChecker(thread_config);
+
+        if (checker == nullptr) {
+            return -1;
+        }
+
+        Threads.emplace_back(process, checker, std::ref(mtx));
     }
 
     for (auto &thread : Threads) {
