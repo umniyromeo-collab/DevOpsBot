@@ -4,13 +4,14 @@
 #include <random>
 #include <chrono>
 #include <mutex>
+#include <functional>
 // #include <curl/curl.h>
 
 
 #include "checkers/builder/builder.h"
 #include "checkers/http/config.h"
 #include "checkers/https/config.h"
-
+#include "../lib/thread_pools/thread_pool.h"
 
 void process(const IChecker &checker, std::mutex &mtx) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -39,19 +40,26 @@ int main() {
         {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}}
     };
 
-    std::mutex mtx;
+    std::mutex pool_mtx;
+    const ThreadPool pool(4);
 
-    for (const auto &thread_config : ThreadConfigs) {
-        auto checker = Builder::CreateChecker(thread_config);
+    while (true) {
+        std::cout << "start" << std::endl;
 
-        if (checker == nullptr) {
-            return -1;
+        std::vector< std::function<void()> > tasks;
+
+        for (const auto &thread_config : ThreadConfigs) {
+            auto checker = std::shared_ptr<IChecker>(Builder::CreateChecker(thread_config));
+
+           tasks.emplace_back([checker, &pool_mtx]() {
+                process(*checker, pool_mtx);
+           });
         }
 
-        Threads.emplace_back(process, checker, std::ref(mtx));
-    }
+        pool.Execute(tasks);
 
-    for (auto &thread : Threads) {
-        thread.join();
+        std::cout << "end" << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
