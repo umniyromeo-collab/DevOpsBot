@@ -4,13 +4,14 @@
 #include <random>
 #include <chrono>
 #include <mutex>
+#include <functional>
 // #include <curl/curl.h>
 
 
 #include "checkers/builder/builder.h"
 #include "checkers/http/config.h"
 #include "checkers/https/config.h"
-
+#include "../lib/thread_pools/thread_pool.h"
 
 void process(const IChecker &checker, std::mutex &mtx) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -31,27 +32,31 @@ int main() {
     std::vector<std::thread> Threads;
 
     const std::vector<Builder::Config> ThreadConfigs{
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}}
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google1.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google2.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google3.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google4.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google5.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google6.com", 200}}
     };
 
-    std::mutex mtx;
+    std::mutex pool_mtx;
+    ThreadPool pool(4);
 
-    for (const auto &thread_config : ThreadConfigs) {
-        auto checker = Builder::CreateChecker(thread_config);
+    for (int _ = 0; _ < 5; ++_) {
+        std::cout << "start" << std::endl;
 
-        if (checker == nullptr) {
-            return -1;
+
+        for (const auto &thread_config : ThreadConfigs) {
+            auto checker = std::shared_ptr<IChecker>(Builder::CreateChecker(thread_config));
+
+           pool.Execute([checker, &pool_mtx]() {
+                process(*checker, pool_mtx);
+           });
         }
 
-        Threads.emplace_back(process, checker, std::ref(mtx));
-    }
+        std::cout << "end" << std::endl;
 
-    for (auto &thread : Threads) {
-        thread.join();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }

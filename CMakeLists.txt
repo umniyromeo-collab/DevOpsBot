@@ -11,4 +11,8 @@ add_executable(DevOpsBot
         internal/status_checker/checkers/builder/builder.cpp
         internal/status_checker/checkers/http/checker.cpp
         internal/status_checker/checkers/https/checker.cpp
+        internal/lib/thread_pools/thread_pool.h
+        internal/lib/thread_pools/thread_pool.cpp
+        internal/lib/thread_queue/thread_queue.h
+        internal/lib/thread_queue/thread_queue.cpp
 )
