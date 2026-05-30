@@ -32,31 +32,28 @@ int main() {
     std::vector<std::thread> Threads;
 
     const std::vector<Builder::Config> ThreadConfigs{
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}},
-        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google.com", 200}}
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google1.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google2.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google3.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google4.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google5.com", 200}},
+        {Builder::ConfigType::https, HTTPSChecker::Config{"https://google6.com", 200}}
     };
 
     std::mutex pool_mtx;
-    const ThreadPool pool(4);
+    ThreadPool pool(4);
 
-    while (true) {
+    for (int _ = 0; _ < 5; ++_) {
         std::cout << "start" << std::endl;
 
-        std::vector< std::function<void()> > tasks;
 
         for (const auto &thread_config : ThreadConfigs) {
             auto checker = std::shared_ptr<IChecker>(Builder::CreateChecker(thread_config));
 
-           tasks.emplace_back([checker, &pool_mtx]() {
+           pool.Execute([checker, &pool_mtx]() {
                 process(*checker, pool_mtx);
            });
         }
-
-        pool.Execute(tasks);
 
         std::cout << "end" << std::endl;
 

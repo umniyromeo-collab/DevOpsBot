@@ -10,7 +10,7 @@ ThreadPool::ThreadPool(const size_t num_threads) : threads_num(num_threads), sto
 
                 std::unique_lock lock(task_mtx);
 
-                // while (tasks.empty()) {
+                // while (!(stop_flag || !tasks.empty())) {
                 //     sleep_cv.wait(lock);
                 // }
 
@@ -39,10 +39,21 @@ void ThreadPool::Execute(std::function < void() > new_task) {
     std::lock_guard lock(task_mtx);
 
     tasks.push(std::move(new_task));
+
     sleep_cv.notify_one();
 
 }
 
 ThreadPool::~ThreadPool(){
 
+    {
+        std::unique_lock lock(task_mtx);
+        stop_flag = true;
+    }
+
+    sleep_cv.notify_all();
+
+    for (auto &t : threads) {
+        t.join();
+    }
 }

@@ -12,7 +12,7 @@ private:
     size_t threads_num;
     std::vector<std::thread> threads;
 
-    std::queue< std::function < void() > > tasks;
+    std::queue < std::function <void()> > tasks;
     std::mutex task_mtx;
 
     bool stop_flag;
@@ -21,6 +21,7 @@ private:
 public:
     explicit ThreadPool(size_t num_threads);
 
-
     void Execute(std::function < void() > new_task);
+
+    ~ThreadPool();
 };
