@@ -46,7 +46,6 @@ int main() {
     for (int _ = 0; _ < 5; ++_) {
         std::cout << "start" << std::endl;
 
-
         for (const auto &thread_config : ThreadConfigs) {
             auto checker = std::shared_ptr<IChecker>(Builder::CreateChecker(thread_config));
 

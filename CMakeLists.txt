@@ -15,4 +15,8 @@ add_executable(DevOpsBot
         internal/lib/thread_pools/thread_pool.cpp
         internal/lib/thread_queue/thread_queue.h
         internal/lib/thread_queue/thread_queue.cpp
+        internal/lib/spin_lock/spin_lock.h
+        internal/lib/spin_lock/spin_lock.cpp
+        internal/lib/semaphore/semaphore.h
+        internal/lib/semaphore/semahpore.cpp
 )
