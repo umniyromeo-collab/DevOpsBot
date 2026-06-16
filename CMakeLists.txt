@@ -16,3 +16,24 @@ add_executable(DevOpsBot
         internal/lib/thread_queue/thread_queue.h
         internal/lib/thread_queue/thread_queue.cpp
 )
+
+# ---- Юнит-тесты на GoogleTest ----
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        v1.15.2
+)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+include(GoogleTest)
+
+# Red-слой: тесты на внутренности HTTP-чекера.
+# Сейчас не компилируются — у Checker ещё нет конструктора с IFetcher.
+add_executable(checker_test
+        internal/status_checker/checkers/http/checker_test.cpp
+        internal/status_checker/checkers/http/checker.cpp
+)
+target_link_libraries(checker_test PRIVATE gtest_main)
+gtest_discover_tests(checker_test)
