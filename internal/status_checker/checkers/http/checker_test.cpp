@@ -1,6 +1,6 @@
 #include "checker.h"      // HTTPChecker::Checker
 #include "config.h"       // HTTPChecker::Config
-#include "../fetcher.h"   // net::IFetcher
+#include "../Ifetcher.h"   // net::IFetcher
 
 #include <gtest/gtest.h>
 
@@ -10,7 +10,7 @@ namespace {
 
 // Фейковый фетчер: в сеть не ходит, возвращает заранее заданный код
 // и запоминает, какой URL у него спросили. Это и есть подмена "шва".
-class FakeFetcher : public net::IFetcher {
+class MockFetcher : public net::IFetcher {
 public:
     int code_to_return = 0;
     mutable std::string last_requested_url;
@@ -25,7 +25,7 @@ public:
 
 // Сервис ответил ожидаемым кодом -> сервис жив -> Check() == true.
 TEST(HttpChecker, IsUpWhenCodeMatchesExpected) {
-    FakeFetcher fetcher;
+    MockFetcher fetcher;
     fetcher.code_to_return = 200;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://example.com", 200}, fetcher);
 
@@ -34,7 +34,7 @@ TEST(HttpChecker, IsUpWhenCodeMatchesExpected) {
 
 // Хост ответил, но не тем кодом, что ждали -> Check() == false.
 TEST(HttpChecker, IsDownWhenCodeDiffers) {
-    FakeFetcher fetcher;
+    MockFetcher fetcher;
     fetcher.code_to_return = 404;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://example.com", 200}, fetcher);
 
@@ -43,7 +43,7 @@ TEST(HttpChecker, IsDownWhenCodeDiffers) {
 
 // Ответа не было вовсе (код 0) -> Check() == false.
 TEST(HttpChecker, IsDownWhenUnreachable) {
-    FakeFetcher fetcher;
+    MockFetcher fetcher;
     fetcher.code_to_return = 0;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://example.com", 200}, fetcher);
 
@@ -52,7 +52,7 @@ TEST(HttpChecker, IsDownWhenUnreachable) {
 
 // Checker обязан спрашивать ровно тот URL, что задан в конфиге.
 TEST(HttpChecker, RequestsConfiguredUrl) {
-    FakeFetcher fetcher;
+    MockFetcher fetcher;
     fetcher.code_to_return = 200;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://my-site.org/health", 200}, fetcher);
 
@@ -63,7 +63,7 @@ TEST(HttpChecker, RequestsConfiguredUrl) {
 
 // URL() возвращает адрес из конфига (метод уже есть — тест-страховка от регрессий).
 TEST(HttpChecker, UrlReturnsConfiguredAddress) {
-    FakeFetcher fetcher;
+    MockFetcher fetcher;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://my-site.org", 200}, fetcher);
 
     EXPECT_EQ(checker.URL(), "http://my-site.org");

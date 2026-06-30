@@ -34,6 +34,11 @@ include(GoogleTest)
 add_executable(checker_test
         internal/status_checker/checkers/http/checker_test.cpp
         internal/status_checker/checkers/http/checker.cpp
+        internal/status_checker/checkers/http/fetcher.h
+        internal/status_checker/checkers/http/fetcher.cpp
 )
 target_link_libraries(checker_test PRIVATE gtest_main)
 gtest_discover_tests(checker_test)
+
+find_package(CURL REQUIRED)
+target_link_libraries(DevOpsBot PRIVATE CURL::libcurl cpr::cpr)
