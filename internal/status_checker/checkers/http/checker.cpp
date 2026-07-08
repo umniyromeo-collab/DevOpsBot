@@ -1,14 +1,14 @@
 #include "checker.h"
 
-namespace HTTPChecker{
+namespace HTTPChecker {
+
     Checker::Checker(const Config &config) : url_(config.url), http_code_(config.http_code), fetcher_(nullptr) {}
-    Checker::Checker(const Config &config, net::IFetcher &fetcher) {
+    Checker::Checker(const Config &config, net::IFetcher &fetcher) : url_(config.url), http_code_(config.http_code), fetcher_(nullptr) {
         fetcher_ = &fetcher;
     }
 
-
     bool Checker::Check() const {
-        return this->url_.find("http://") == 0;
+        return fetcher_-> FetchStatusCode(url_) == http_code_;
     }
 
     std::string Checker::URL() const {

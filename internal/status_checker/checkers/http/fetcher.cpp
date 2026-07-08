@@ -2,9 +2,9 @@
 
 #include <cpr/cpr.h>
 
-namespace net {
+namespace HTTPChecker {
 
-    int CprFetcher::FetchStatusCode(const std::string& url) const {
+    int Fetcher::FetchStatusCode(const std::string& url) const {
         const cpr::Response response = cpr::Get(
             cpr::Url{url},
             cpr::Timeout{10000}  // 10 секунд, чтобы не висеть вечно

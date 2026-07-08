@@ -1,7 +1,6 @@
 #pragma once
 #include "Ifetcher.h"
 
-#include <curl/curl.h>
 
 // class FakeFetcher : public net::IFetcher {
 // public:
@@ -14,12 +13,13 @@
 //     }
 // };
 
-namespace HTTPChecker{
+namespace HTTPChecker {
 class Fetcher final : public net::IFetcher {
 
+public:
     Fetcher();
 
-    int FetchStatusCode(const std::string &url) const override;
+    [[nodiscard]] int FetchStatusCode(const std::string &url) const override;
 
     ~Fetcher() override;
 
