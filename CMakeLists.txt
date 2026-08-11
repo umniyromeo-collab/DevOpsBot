@@ -8,8 +8,6 @@ include_directories(internal/status_checker/checkers)
 
 include(FetchContent)
 
-set(BUILD_SHARED_LIBS OFF)  # все FetchContent-зависимости собираем статически — нет проблем с DLL на Windows
-
 # ---- GoogleTest ----
 FetchContent_Declare(
         googletest
@@ -31,11 +29,25 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cpr)
 
+# ---- nlohmann/json для разбора ответов Telegram Bot API ----
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
+# ---- Учебный Telegram-бот: печатает запрос и отвечает текущим временем ----
+add_executable(TelegramBot
+        internal/telegram_bot/main.cpp
+        internal/telegram_bot/bot.cpp
+)
+target_link_libraries(TelegramBot PRIVATE cpr::cpr nlohmann_json::nlohmann_json)
+
 add_executable(DevOpsBot
         internal/status_checker/main.cpp
         internal/status_checker/checkers/builder/builder.cpp
         internal/status_checker/checkers/http/checker.cpp
-        internal/status_checker/checkers/http/fetcher.cpp
         internal/status_checker/checkers/https/checker.cpp
         internal/lib/thread_pools/thread_pool.h
         internal/lib/thread_pools/thread_pool.cpp
@@ -47,8 +59,7 @@ target_link_libraries(DevOpsBot PRIVATE cpr::cpr)
 # ---- Юнит-тесты на внутренности HTTP-чекера ----
 # fetcher.cpp сюда НЕ добавляем: тесты подменяют сеть своим MockFetcher.
 enable_testing()
-include(GoogleTest
-)
+include(GoogleTest)
 
 add_executable(checker_test
         internal/status_checker/checkers/http/checker_test.cpp
