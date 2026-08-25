@@ -1,0 +1,24 @@
+CURL* handle = curl_easy_init();
+        if (handle == nullptr) {
+            return 0;
+        }
+
+        curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L);  // идём за редиректами
+        curl_easy_setopt(handle, CURLOPT_TIMEOUT, 10L);        // не висим вечно
+        curl_easy_setopt(handle, CURLOPT_NOSIGNAL, 1L);        // безопасно в многопотоке
+        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION,
+                         +[](char* /*ptr*/, size_t size, size_t nmemb, void* /*userdata*/) -> size_t {
+                             return size * nmemb;
+                         });
+
+        const CURLcode result = curl_easy_perform(handle);
+
+        long http_code = 0;
+        if (result == CURLE_OK) {
+            curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_code);
+        }
+        // result != CURLE_OK (таймаут, DNS, отказ) -> http_code остаётся 0.
+
+        curl_easy_cleanup(handle);
+        return static_cast<int>(http_code);

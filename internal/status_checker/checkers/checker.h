@@ -6,3 +6,4 @@ public:
     [[nodiscard]] virtual bool Check() const = 0;
     [[nodiscard]] virtual std::string URL() const = 0;
 };
+
