@@ -31,7 +31,7 @@ namespace telegram {
             cpr::Url{ApiUrl("getUpdates")},
             cpr::Parameters{
                 {"offset", std::to_string(offset)},
-                {"timeout", "30"}
+                {"timeout", "15"}
             },
             cpr::Timeout{30000}
         );
