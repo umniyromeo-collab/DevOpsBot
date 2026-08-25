@@ -1,0 +1,8 @@
+# Белый список: в контекст сборки попадает только то, что нужно CMake.
+# Без этого docker утащил бы build/ (338 МБ) и cmake-build-debug/ (33 МБ).
+*
+!CMakeLists.txt
+!internal
+
+# Мусор macOS, если он затесался внутрь internal/
+**/.DS_Store
