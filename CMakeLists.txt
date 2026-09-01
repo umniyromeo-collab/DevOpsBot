@@ -64,6 +64,41 @@ include(GoogleTest)
 add_executable(checker_test
         internal/status_checker/checkers/http/checker_test.cpp
         internal/status_checker/checkers/http/checker.cpp
+        ../../../../../../wsl.localhost/Ubuntu/home/idk/projects/DevOpsBot/internal/db/main.cpp
+        ../../../../../../wsl.localhost/Ubuntu/home/idk/projects/DevOpsBot/src/storage.cpp
+        ../../../../../../wsl.localhost/Ubuntu/home/idk/projects/DevOpsBot/internal/db/storage.cpp
 )
 target_link_libraries(checker_test PRIVATE gtest_main cpr::cpr)
 gtest_discover_tests(checker_test)
+
+
+# ---- libpqxx: официальный C++-клиент PostgreSQL (обёртка над libpq) ----
+# Пути к libpq спрашиваем у pg_config, а не хардкодим: на macOS Homebrew
+# ставит postgresql keg-only, в Alpine это пакет libpq-dev — префиксы разные.
+find_program(PG_CONFIG_EXECUTABLE pg_config)
+if (PG_CONFIG_EXECUTABLE)
+    execute_process(COMMAND ${PG_CONFIG_EXECUTABLE} --includedir
+            OUTPUT_VARIABLE PG_INCLUDEDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${PG_CONFIG_EXECUTABLE} --libdir
+            OUTPUT_VARIABLE PG_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(PostgreSQL_INCLUDE_DIR "${PG_INCLUDEDIR}" CACHE PATH "libpq headers" FORCE)
+    set(PostgreSQL_TYPE_INCLUDE_DIR "${PG_INCLUDEDIR}" CACHE PATH "libpq server headers" FORCE)
+    find_library(PostgreSQL_LIBRARY NAMES pq HINTS "${PG_LIBDIR}")
+endif ()
+
+# Не собирать тесты самой libpqxx — нам нужна только библиотека.
+set(SKIP_BUILD_TEST ON)
+FetchContent_Declare(
+        libpqxx
+        GIT_REPOSITORY https://github.com/jtv/libpqxx.git
+        GIT_TAG 7.10.7
+)
+FetchContent_MakeAvailable(libpqxx)
+
+# ---- Демонстрация записи событий бота в PostgreSQL ----
+add_executable(PgDemo
+        internal/db/main.cpp
+        internal/db/storage.cpp
+)
+target_include_directories(PgDemo PRIVATE internal/db)
+target_link_libraries(PgDemo PRIVATE libpqxx::pqxx)

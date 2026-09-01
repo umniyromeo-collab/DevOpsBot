@@ -44,6 +44,10 @@ namespace telegram {
 
             new_offset = mes.at("update_id").get<int64_t>() + 1;
 
+            if (!mes.contains("message") || !mes["message"].contains("text")) {
+                continue;
+            }
+
             const auto chat_id = mes["message"]["chat"]["id"].get<int64_t>();
 
             std::cout << mes["message"]["text"].get<std::string>() << "\n";
