@@ -93,11 +93,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libpqxx)
 
 # ---- Хранилище результатов проверок (единственное место, где есть SQL) ----
-# PUBLIC: кто линкуется со storage, получает и путь к storage.h, и libpqxx.
+# Интерфейс IStorage — в internal/storage, реализация на Postgres — в internal/db.
+# PUBLIC: кто линкуется со storage, получает пути к storage.h / pg_storage.h и libpqxx.
 add_library(storage
-        internal/db/storage.cpp
+        internal/db/pg_storage.cpp
 )
-target_include_directories(storage PUBLIC internal/db)
+target_include_directories(storage PUBLIC internal/storage internal/db)
 target_link_libraries(storage PUBLIC libpqxx::pqxx)
 
 target_link_libraries(DevOpsBot PRIVATE storage)
