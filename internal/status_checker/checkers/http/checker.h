@@ -11,7 +11,7 @@ namespace HTTPChecker {
         explicit Checker(const Config &config, net::IFetcher &fetcher);
 
         virtual ~Checker() override {}
-        bool Check() const override;
+        CheckerResult Check() const override;
         std::string URL() const override;
         // HTTPSChecker (HTTPSChecker &&) noexcept = default;
 
