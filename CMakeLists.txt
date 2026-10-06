@@ -64,9 +64,6 @@ include(GoogleTest)
 add_executable(checker_test
         internal/status_checker/checkers/http/checker_test.cpp
         internal/status_checker/checkers/http/checker.cpp
-        ../../../../../../wsl.localhost/Ubuntu/home/idk/projects/DevOpsBot/internal/db/main.cpp
-        ../../../../../../wsl.localhost/Ubuntu/home/idk/projects/DevOpsBot/src/storage.cpp
-        ../../../../../../wsl.localhost/Ubuntu/home/idk/projects/DevOpsBot/internal/db/storage.cpp
 )
 target_link_libraries(checker_test PRIVATE gtest_main cpr::cpr)
 gtest_discover_tests(checker_test)
@@ -95,10 +92,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(libpqxx)
 
+# ---- Хранилище результатов проверок (единственное место, где есть SQL) ----
+# PUBLIC: кто линкуется со storage, получает и путь к storage.h, и libpqxx.
+add_library(storage
+        internal/db/storage.cpp
+)
+target_include_directories(storage PUBLIC internal/db)
+target_link_libraries(storage PUBLIC libpqxx::pqxx)
+
+target_link_libraries(DevOpsBot PRIVATE storage)
+
 # ---- Демонстрация записи событий бота в PostgreSQL ----
 add_executable(PgDemo
         internal/db/main.cpp
-        internal/db/storage.cpp
 )
-target_include_directories(PgDemo PRIVATE internal/db)
-target_link_libraries(PgDemo PRIVATE libpqxx::pqxx)
+target_link_libraries(PgDemo PRIVATE storage)

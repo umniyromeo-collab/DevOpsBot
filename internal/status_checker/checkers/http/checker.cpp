@@ -7,8 +7,9 @@ namespace HTTPChecker {
         fetcher_ = &fetcher;
     }
 
-    bool Checker::Check() const {
-        return fetcher_-> FetchStatusCode(url_) == http_code_;
+    CheckerResult Checker::Check() const {
+        const int code = fetcher_->FetchStatusCode(url_);
+        return {url_, code, code == http_code_};
     }
 
     std::string Checker::URL() const {

@@ -27,7 +27,7 @@ int main() {
 
     const std::unique_ptr<IChecker> googleChecker = Builder::CreateChecker(config);
 
-    std::cout << googleChecker->Check() << std::endl;
+    std::cout << googleChecker->Check().is_up << std::endl;
 
     std::vector<std::thread> Threads;
 
