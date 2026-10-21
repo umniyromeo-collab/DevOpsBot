@@ -29,7 +29,7 @@ TEST(HttpChecker, IsUpWhenCodeMatchesExpected) {
     fetcher.code_to_return = 200;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://example.com", 200}, fetcher);
 
-    EXPECT_TRUE(checker.Check());
+    EXPECT_TRUE(checker.Check().is_up);
 }
 
 // Хост ответил, но не тем кодом, что ждали -> Check() == false.
@@ -38,7 +38,7 @@ TEST(HttpChecker, IsDownWhenCodeDiffers) {
     fetcher.code_to_return = 404;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://example.com", 200}, fetcher);
 
-    EXPECT_FALSE(checker.Check());
+    EXPECT_FALSE(checker.Check().is_up);
 }
 
 // Ответа не было вовсе (код 0) -> Check() == false.
@@ -47,7 +47,7 @@ TEST(HttpChecker, IsDownWhenUnreachable) {
     fetcher.code_to_return = 0;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://example.com", 200}, fetcher);
 
-    EXPECT_FALSE(checker.Check());
+    EXPECT_FALSE(checker.Check().is_up);
 }
 
 // Checker обязан спрашивать ровно тот URL, что задан в конфиге.
@@ -56,7 +56,7 @@ TEST(HttpChecker, RequestsConfiguredUrl) {
     fetcher.code_to_return = 200;
     HTTPChecker::Checker checker(HTTPChecker::Config{"http://my-site.org/health", 200}, fetcher);
 
-    checker.Check();
+    (void)checker.Check();
 
     EXPECT_EQ(fetcher.last_requested_url, "http://my-site.org/health");
 }

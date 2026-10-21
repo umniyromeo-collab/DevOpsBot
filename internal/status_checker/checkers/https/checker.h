@@ -7,7 +7,7 @@ namespace HTTPSChecker {
     public:
         explicit Checker(const Config& config);
         virtual ~Checker() override {}
-        bool Check() const override;
+        CheckerResult Check() const override;
         std::string URL() const override;
         // Checker (Checker &&) noexcept = default;
     private:
