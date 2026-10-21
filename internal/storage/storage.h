@@ -4,8 +4,12 @@
 template<typename store_func>
 class Storage {
 public:
-  virtual ~Storage() = default;
-  virtual void Store(CheckerResult &res) {store_func_(res);}
+    ~Storage() = default;
+    template <typename Entry>
+    void Store(const Entry &res) {
+        store_func_(res);
+    }
+
 private:
-  store_func store_func_;
+    store_func store_func_;
 };

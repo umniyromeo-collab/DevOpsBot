@@ -8,12 +8,11 @@ namespace HTTPChecker {
     }
 
     CheckerResult Checker::Check() const {
-        const int code = fetcher_->FetchStatusCode(url_);
-        return {url_, code, code == http_code_};
+      const int code = fetcher_->FetchStatusCode(url_);
+      return {url_, code, code == http_code_};
     }
 
     std::string Checker::URL() const {
         return this->url_;
     }
 }
-

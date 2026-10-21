@@ -5,7 +5,7 @@ namespace HTTPSChecker {
 
     // В сеть пока не ходит, поэтому реального кода ответа нет — пишем 0.
     CheckerResult Checker::Check() const {
-        return {url_, 0, this->url_.find("https://") == 0};
+      return {url_, 0, this->url_.find("https://") == 0};
     }
 
     std::string Checker::URL() const {
