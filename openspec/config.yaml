@@ -1,0 +1,33 @@
+schema: spec-driven
+
+context: |
+  Language: Russian
+  All artifacts must be written in Russian.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  Project: DevOpsBot — C++ сервис проверки статуса HTTP/HTTPS-ресурсов + Telegram-бот.
+  Stack: C++, CMake (FetchContent), cpr, nlohmann_json, libpqxx (PostgreSQL), GoogleTest, docker-compose.
+  Layout: internal/status_checker (главный бинарь DevOpsBot), internal/telegram_bot,
+  internal/lib (thread pool, thread queue), сборка в cmake-build-debug/.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

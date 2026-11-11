@@ -1,32 +1,38 @@
 #pragma once
 
-#include <string>
+#include "message_sender.h"
+
 #include <cstdint>
+#include <string>
+#include <vector>
 
 namespace telegram {
 
-    // Простейший клиент Telegram Bot API поверх cpr (libcurl).
+    // Входящее текстовое сообщение.
+    struct IncomingMessage {
+        std::int64_t chat_id = 0;
+        std::string text;
+    };
+
+    // Клиент Telegram Bot API поверх cpr (libcurl): только транспорт, без логики команд.
     //
-    // Работает через long polling: getUpdates с таймаутом держит соединение
-    // открытым, пока не придёт новое сообщение либо не истечёт таймаут.
-    // На каждое входящее сообщение печатает его текст в консоль и отвечает
-    // текущим временем сервера.
-    class Bot final {
+    // Методы const и трогают только token_, поэтому GetUpdates (поток команд) и Send (оба потока)
+    // можно вызывать одновременно. Токен входит в URL запроса — URL и ошибки cpr не логируем.
+    class Bot final : public IMessageSender {
     public:
         // token — токен бота, выданный @BotFather.
         explicit Bot(std::string token);
 
-        // Запускает бесконечный цикл опроса. Блокирует поток вызова.
-        void Run();
+        // Long polling getUpdates: ждёт новых сообщений до нескольких секунд и сдвигает offset.
+        // При ошибке сети или непонятном ответе возвращает пустой список (после паузы),
+        // а не роняет процесс.
+        [[nodiscard]] std::vector<IncomingMessage> GetUpdates(std::int64_t &offset) const;
+
+        // sendMessage с таймаутом 10 с.
+        SendResult Send(std::int64_t chat_id, const std::string &text) override;
+        [[nodiscard]] SendResult SendText(std::int64_t chat_id, const std::string &text) const;
 
     private:
-        // Один шаг опроса: забирает пачку апдейтов и обрабатывает их.
-        // Возвращает offset для следующего запроса (id последнего апдейта + 1).
-        int64_t Poll(int64_t offset);
-
-        // Отправляет текстовое сообщение в чат.
-        void SendText(int64_t chat_id, const std::string& text) const;
-
         std::string ApiUrl(const std::string& method) const;
 
         std::string token_;

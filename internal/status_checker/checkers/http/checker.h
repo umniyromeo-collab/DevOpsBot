@@ -6,8 +6,8 @@
 namespace HTTPChecker {
     class Checker final : public IChecker {
     public:
-        explicit Checker(const Config& config);
-
+        // Конструктора без фетчера нет: с fetcher_ == nullptr Check() падал бы.
+        // fetcher должен жить дольше чекера.
         explicit Checker(const Config &config, net::IFetcher &fetcher);
 
         virtual ~Checker() override {}

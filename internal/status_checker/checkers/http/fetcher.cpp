@@ -4,6 +4,11 @@
 
 namespace HTTPChecker {
 
+    // Состояния нет: каждый cpr::Get открывает свою сессию, поэтому один Fetcher
+    // можно спокойно делить между всеми воркерами пула.
+    Fetcher::Fetcher() = default;
+    Fetcher::~Fetcher() = default;
+
     int Fetcher::FetchStatusCode(const std::string& url) const {
         const cpr::Response response = cpr::Get(
             cpr::Url{url},
